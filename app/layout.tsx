@@ -9,8 +9,8 @@ import { CartProvider } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Petshoppe",
-  description: "Your pet's grooming partner",
+  title: "PixelRent",
+  description: "Video game rentals made easy",
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <CartProvider>
-          <div className="relative flex min-h-screen w-full flex-col bg-[#f8fcf9] text-[#0d1b12] group/design-root overflow-x-hidden">
+          <div className="relative flex min-h-screen w-full flex-col bg-[#080b16] text-white overflow-x-hidden">
             <Header />
             <CartNotificationWrapper />
             <main className="flex-grow pt-16">{children}</main>

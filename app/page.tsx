@@ -1,153 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import type { Testimonial } from "@/types";
-import TestimonialCard from "../components/TestimonialCard";
-import { useAuth } from "@/hooks/useAuth";
-import LoginModal from "../components/LoginModal";
-import RegisterModal from "../components/RegisterModal";
 
-const testimonials: Testimonial[] = [
-  {
-    name: "Sophia Clark",
-    time: "2 months ago",
-    rating: 5,
-    review:
-      "My dog, Max, always comes back happy and looking great! The groomers are so caring and professional.",
-    avatarUrl: "https://picsum.photos/id/1027/100/100",
-  },
-  {
-    name: "Ethan Miller",
-    time: "3 months ago",
-    rating: 4,
-    review:
-      "The service was excellent, and my cat, Whiskers, was very relaxed throughout the grooming session.",
-    avatarUrl: "https://picsum.photos/id/1005/100/100",
-  },
-  {
-    name: "Olivia Davis",
-    time: "4 months ago",
-    rating: 5,
-    review:
-      "I've been bringing my pets here for years, and they always do an amazing job. Highly recommend!",
-    avatarUrl: "https://picsum.photos/id/1011/100/100",
-  },
-  {
-    name: "James Wilson",
-    time: "1 month ago",
-    rating: 5,
-    review:
-      "The staff is incredibly knowledgeable and patient with my anxious dog. The grooming results are always fantastic!",
-    avatarUrl: "https://picsum.photos/id/1018/100/100",
-  },
-  {
-    name: "Ava Thompson",
-    time: "3 weeks ago",
-    rating: 4,
-    review:
-      "Great experience overall. My puppy's nails were trimmed carefully and she was so gentle during the process.",
-    avatarUrl: "https://picsum.photos/id/1012/100/100",
-  },
-  {
-    name: "Noah Johnson",
-    time: "5 weeks ago",
-    rating: 5,
-    review:
-      "Professional service and my pet looks so healthy and clean after each visit. I trust them completely with my pets.",
-    avatarUrl: "https://picsum.photos/id/1008/100/100",
-  },
-];
-
-const HomePage: React.FC = () => {
-  const { user, loading } = useAuth();
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-
-  // Show loading state while checking auth
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen text-lg font-semibold">
-        Checking session...
-      </div>
-    );
-  }
-
+export default function HomePage() {
   return (
-    <div className="flex justify-center py-5">
-      <div className="layout-content-container flex flex-col w-full max-w-[960px] flex-1 px-4 sm:px-0 rounded-bl-2xl rounded-br-2xl">
-        {/* 🔹 Main content */}
-        <div className="relative flex items-center justify-center bg-black aspect-video rounded-lg overflow-hidden"></div>
-        <h1 className="text-[#0d1b12] tracking-light text-2xl md:text-[32px] font-bold leading-tight px-4 text-center pb-3 pt-6">
-          Your Pet&apos;s Grooming Partner
+    <div className="min-h-screen bg-[#080b16] text-white">
+      <section className="mx-auto flex max-w-6xl flex-col items-center px-6 py-20 text-center">
+        <div className="mb-6 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-300">
+          Video Game Rental System
+        </div>
+
+        <h1 className="max-w-4xl text-5xl font-black tracking-tight md:text-7xl">
+          Rent Games. Play More. Spend Less.
         </h1>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 my-4">
-          <button
-            onClick={() => {
-              if (user) {
-                // If logged in, redirect to services page
-                window.location.href = "/services";
-              } else {
-                // If not logged in, open login modal
-                setIsLoginModalOpen(true);
-              }
-            }}
-            className="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#13ec5b] text-[#0d1b12] text-sm font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity"
-          >
-            <span className="truncate">Book Appointment</span>
-          </button>
+        <p className="mt-6 max-w-2xl text-lg text-gray-300">
+          Browse popular titles, reserve your favorite games, checkout rentals,
+          and track your rental history in one place.
+        </p>
+
+        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <Link
             href="/products"
-            className="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#e7f3eb] text-[#0d1b12] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#d8e9df] transition-colors"
+            className="rounded-full bg-cyan-400 px-8 py-3 font-bold text-[#080b16] transition hover:bg-cyan-300"
           >
-            <span className="truncate">Shop Products</span>
+            Browse Games
           </Link>
-        </div>
 
-        {/* 🔹 Testimonials section */}
-        <div className="flex justify-between items-center px-4 pb-3 pt-5">
-          <h2 className="text-[#0d1b12] text-[22px] font-bold leading-tight tracking-[-0.015em]">
-            Customer Testimonials
-          </h2>
           <Link
-            href="/reviews"
-            className="text-[#4c9a66] text-sm font-medium leading-normal hover:underline flex items-center"
+            href="/booking"
+            className="rounded-full border border-white/20 px-8 py-3 font-bold text-white transition hover:bg-white/10"
           >
-            See more reviews →
+            Reserve a Game
           </Link>
         </div>
-        <div className="flex flex-col gap-8 overflow-x-hidden p-4">
-          {testimonials.map((testimonial, index) => (
-            <TestimonialCard key={index} testimonial={testimonial} />
-          ))}
+      </section>
+
+      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 pb-20 md:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h2 className="text-xl font-bold text-cyan-300">Latest Games</h2>
+          <p className="mt-3 text-gray-300">
+            Rent games from PlayStation, Xbox, Nintendo Switch, and PC.
+          </p>
         </div>
-      </div>
 
-      {/* Login and Register Modals */}
-      {isLoginModalOpen && (
-        <LoginModal
-          isOpen={isLoginModalOpen}
-          onClose={() => setIsLoginModalOpen(false)}
-          onSwitchToRegister={() => {
-            setIsLoginModalOpen(false);
-            setIsRegisterModalOpen(true);
-          }}
-        />
-      )}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h2 className="text-xl font-bold text-cyan-300">Easy Checkout</h2>
+          <p className="mt-3 text-gray-300">
+            Add games to your rental cart and confirm your rental order.
+          </p>
+        </div>
 
-      {isRegisterModalOpen && (
-        <RegisterModal
-          isOpen={isRegisterModalOpen}
-          onClose={() => setIsRegisterModalOpen(false)}
-          onSwitchToLogin={() => {
-            setIsRegisterModalOpen(false);
-            setIsLoginModalOpen(true);
-          }}
-        />
-      )}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h2 className="text-xl font-bold text-cyan-300">Rental History</h2>
+          <p className="mt-3 text-gray-300">
+            View your previous rentals, order status, and game details.
+          </p>
+        </div>
+      </section>
     </div>
   );
-};
-
-export default HomePage;
+}

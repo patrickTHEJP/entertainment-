@@ -1,154 +1,121 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import type { Product } from "../../types";
-import ProductCard from "../../components/ProductCard";
-import Dropdown from "../../components/Dropdown";
-import PriceRangeFilter from "../../components/PriceRangeFilter";
+import { useEffect, useMemo, useState } from "react";
+import ProductCard from "@/components/ProductCard";
+import type { Product } from "@/types";
 
-const defaultCategories = [{ value: "All", label: "All Categories" }];
-
-const ProductsPage: React.FC = () => {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [categoryOptions, setCategoryOptions] =
-    useState(defaultCategories);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 100 });
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All Categories");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(500);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("/api/products");
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const products: Product[] = await response.json();
-        setAllProducts(products);
-
-        // Sync category dropdown with available product categories.
-        const uniqueCategories = Array.from(
-          new Set(
-            products
-              .map((product) => product.category?.trim())
-              .filter(Boolean) as string[]
-          )
-        ).sort();
-        setCategoryOptions([
-          defaultCategories[0],
-          ...uniqueCategories.map((category) => ({
-            value: category,
-            label: category,
-          })),
-        ]);
-
-        // Update price range based on fetched products
-        if (products.length > 0) {
-          const min = Math.min(...products.map((p: Product) => p.price));
-          const max = Math.max(...products.map((p: Product) => p.price));
-          setPriceRange({ min, max });
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
-    fetchProducts();
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        const list = Array.isArray(data) ? data : data.products || [];
+        setProducts(list);
+      })
+      .catch(() => setProducts([]));
   }, []);
 
-  // Filtering logic
-  const filteredProducts = useMemo(() => {
-    return allProducts.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesCategory =
-        selectedCategory === "All" || product.category === selectedCategory;
-      const matchesPrice =
-        product.price >= priceRange.min && product.price <= priceRange.max;
+  const categories = useMemo(() => {
+    return [
+      "All Categories",
+      ...Array.from(new Set(products.map((product) => product.category))),
+    ];
+  }, [products]);
 
-      return matchesSearch && matchesCategory && matchesPrice;
-    });
-  }, [searchQuery, selectedCategory, priceRange, allProducts]);
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      category === "All Categories" || product.category === category;
+
+    const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+
+    return matchesSearch && matchesCategory && matchesPrice;
+  });
 
   return (
-    <div className="py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Our Products
+    <div className="min-h-screen bg-[#080b16] px-6 py-12 text-white">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10 text-center">
+          <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-cyan-300">
+            PixelRent
+          </p>
+
+          <h1 className="text-4xl font-black text-white md:text-5xl">
+            Browse Games
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover our premium selection of pet care products designed to keep
-            your furry friends happy and healthy.
+
+          <p className="mx-auto mt-4 max-w-2xl text-gray-300">
+            Discover video games available for rent across PlayStation, Xbox,
+            Nintendo Switch, and PC.
           </p>
         </div>
 
-        {/* Search Bar and Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="flex-1">
-              <label className="flex flex-col w-full">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                    🔍
-                  </div>
-                  <input
-                    placeholder="Search for products..."
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </label>
-            </div>
+        <div className="mb-10 rounded-2xl border border-white/10 bg-white/10 p-5 shadow-xl">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_220px_280px]">
+            <input
+              type="text"
+              placeholder="Search games..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-white placeholder:text-gray-400 outline-none focus:border-cyan-400"
+            />
 
-            {/* Filters */}
-            <div className="flex gap-4">
-              {/* Category Filter */}
-              <div className="w-48">
-                <Dropdown
-                  options={categoryOptions}
-                  selectedValue={selectedCategory}
-                  onChange={setSelectedCategory}
-                  placeholder="Category"
-                />
-              </div>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-white outline-none focus:border-cyan-400"
+            >
+              {categories.map((item) => (
+                <option key={item} value={item} className="bg-[#111827]">
+                  {item}
+                </option>
+              ))}
+            </select>
 
-              {/* Price Range Filter */}
-              <div className="w-64">
-                <PriceRangeFilter
-                  minPrice={priceRange.min}
-                  maxPrice={priceRange.max}
-                  onPriceChange={(min, max) => setPriceRange({ min, max })}
-                />
-              </div>
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#111827] px-4 py-3">
+              <span className="text-sm font-bold text-gray-300">₱</span>
+              <input
+                type="number"
+                value={minPrice}
+                onChange={(e) => setMinPrice(Number(e.target.value))}
+                className="w-full bg-transparent text-white outline-none"
+              />
+              <span className="text-gray-400">to</span>
+              <span className="text-sm font-bold text-gray-300">₱</span>
+              <input
+                type="number"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                className="w-full bg-transparent text-white outline-none"
+              />
             </div>
           </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No products found
-            </h3>
-            <p className="text-gray-500">
-              Try adjusting your search or filter criteria
+        {filteredProducts.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center">
+            <h2 className="text-xl font-bold text-white">No games found</h2>
+            <p className="mt-2 text-gray-300">
+              Try adjusting your search, platform, or rental price range.
             </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         )}
       </div>
     </div>
   );
-};
-
-export default ProductsPage;
+}

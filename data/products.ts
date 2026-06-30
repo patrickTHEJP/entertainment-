@@ -1,9 +1,52 @@
 import type { Product } from "@/types";
-import productData from "./products.json";
 
-type ProductSeed = Product & { stock?: number };
-
-export const fallbackProducts: ProductSeed[] = productData;
-
-export default fallbackProducts;
-
+export const fallbackProducts: Product[] = [
+  {
+    id: 1,
+    name: "The Legend of Zelda: Tears of the Kingdom",
+    price: 150,
+    imageUrl: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3",
+    category: "Nintendo Switch",
+    description: "Open-world adventure game available for rental.",
+  },
+  {
+    id: 2,
+    name: "Marvel's Spider-Man 2",
+    price: 180,
+    imageUrl: "https://images.unsplash.com/photo-1600861194942-f883de0dfe96",
+    category: "PlayStation 5",
+    description: "Superhero action game available for PS5 rental.",
+  },
+  {
+    id: 3,
+    name: "Elden Ring",
+    price: 170,
+    imageUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420",
+    category: "PlayStation 5",
+    description: "Fantasy action RPG available for multi-day rental.",
+  },
+  {
+    id: 4,
+    name: "Minecraft",
+    price: 120,
+    imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
+    category: "Xbox",
+    description: "Creative sandbox game for casual and family rental.",
+  },
+  {
+    id: 5,
+    name: "Mario Kart 8 Deluxe",
+    price: 140,
+    imageUrl: "https://images.unsplash.com/photo-1580327344181-c1163234e5a0",
+    category: "Nintendo Switch",
+    description: "Fun racing game for parties and multiplayer nights.",
+  },
+  {
+    id: 6,
+    name: "God of War Ragnarok",
+    price: 160,
+    imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e",
+    category: "PlayStation 5",
+    description: "Cinematic action adventure game available for rental.",
+  },
+];
