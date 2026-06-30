@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//
+// ========================================
+// ========== MODELS =======================
+// ========================================
+//
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  name      String?
+  updatedAt DateTime @updatedAt
+  role      Role     @default(USER)
+
+  // Relations
+  orders    Order[]
+  pets      Pet[]
+  reviews   Review[]
+  appointments Appointment[]
+}
+
+model Groomer {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  reviews   Review[]  // 1-to-many reviews (optional on review side)
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+
+  groomerId  Int?         // optional now
+  groomer    Groomer?      @relation(fields: [groomerId], references: [id])
+
+  productId  Int?          // already optional
+  product    Product?      @relation(fields: [productId], references: [id])
+}
+
+model Pet {
+  id           Int           @id @default(autoincrement())
+  name         String
+  species      String?
+  breed        String?
+  sex          String?
+  dob          DateTime?
+  ownerId      Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  appointments Appointment[]
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+}
+
+model Appointment {
+  id        Int               @id @default(autoincrement())
+  petId     Int?
+  userId    Int
+  status    AppointmentStatus @default(SCHEDULED)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  date      DateTime
+
+  groomer   String
+  service   String
+
+  // Relations
+  pet       Pet?              @relation(fields: [petId], references: [id])
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([petId])
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  price       Float
+  stock       Int         @default(0)
+  image       String?
+  category    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  orderItems  OrderItem[]
+  reviews     Review[]
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  userId    Int
+  total     Float
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relations
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int     @default(1)
+  price     Float
+
+  // Relations
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+//
+// ========================================
+// ========== ENUMS ========================
+// ========================================
+//
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
