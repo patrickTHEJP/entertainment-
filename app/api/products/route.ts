@@ -1,4 +1,4 @@
-import fallbackProducts from "@/data/products";
+import { fallbackProducts } from "@/data/products";
 import type { Product as ProductResponse } from "@/types";
 import { prisma } from "../../../lib/prisma";
 
