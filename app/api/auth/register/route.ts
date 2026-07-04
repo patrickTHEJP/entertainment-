@@ -10,37 +10,52 @@ const JWT_SECRET = getJwtSecret();
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, role } = await req.json();
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
       );
     }
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (existingUser) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 401 }
+        { error: "User already exists" },
+        { status: 400 }
       );
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 401 }
-      );
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userRole =
+      role && typeof role === "string" && role.toUpperCase() === "ADMIN"
+        ? "ADMIN"
+        : "USER";
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role: userRole,
+      },
+    });
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
-    const res = NextResponse.json({
-      message: "Login successful",
-      user: { id: user.id, email: user.email, role: user.role },
+    const response = NextResponse.json({
+      message: "User registered successfully",
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
     });
-    res.cookies.set({
+    response.cookies.set({
       name: "token",
       value: token,
       httpOnly: true,
@@ -48,9 +63,9 @@ export async function POST(req: NextRequest) {
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });
-    return res;
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
+    return response;
+  } catch (error) {
+    console.error("REGISTER ERROR:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
