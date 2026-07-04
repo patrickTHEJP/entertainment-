@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import type { Product } from "@/types";
 
+const GAME_CATEGORIES = ["Nintendo Switch", "PlayStation 5", "Xbox", "PC"];
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
@@ -16,7 +18,10 @@ export default function ProductsPage() {
       .then((res) => res.json())
       .then((data) => {
         const list = Array.isArray(data) ? data : data.products || [];
-        setProducts(list);
+        const gamesOnly = list.filter((product: Product) =>
+          GAME_CATEGORIES.includes(product.category)
+        );
+        setProducts(gamesOnly);
       })
       .catch(() => setProducts([]));
   }, []);

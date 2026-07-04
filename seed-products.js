@@ -1,15 +1,14 @@
 async function seedProducts() {
   const dotenv = await import("dotenv");
   dotenv.config();
-
   const { PrismaClient } = await import("@prisma/client");
-  const { fallbackProducts } = await import("./data/products");
-
+  const fallbackProductsModule = await import("./data/products.json", {
+    with: { type: "json" },
+  });
+  const fallbackProducts = fallbackProductsModule.default;
   const prisma = new PrismaClient();
-
   try {
     console.log("Seeding products...");
-
     for (const product of fallbackProducts) {
       await prisma.product.upsert({
         where: { name: product.name },
@@ -29,11 +28,9 @@ async function seedProducts() {
           stock: product.stock ?? 0,
         },
       });
-
-      console.log(`✓ Seeded product: ${product.name}`);
+      console.log(`Seeded product: ${product.name}`);
     }
-
-    console.log("✔️ Products seeding completed!");
+    console.log("Products seeding completed!");
   } catch (error) {
     console.error("Error seeding products:", error);
     process.exit(1);
@@ -41,5 +38,4 @@ async function seedProducts() {
     await prisma.$disconnect();
   }
 }
-
 seedProducts();

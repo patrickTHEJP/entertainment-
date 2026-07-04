@@ -7,7 +7,7 @@ import { useCart } from "../app/providers";
 import { useAuth } from "../hooks/useAuth";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
-import PetshoppeLogo from "./icons/PetshoppeLogo";
+import { FaGamepad } from "react-icons/fa";
 import CartIcon from "./icons/CartIcon";
 import ClockIcon from "./icons/ClockIcon";
 
@@ -36,9 +36,9 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f3eb] px-4 sm:px-10 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-4 text-[#0d1b12]">
-          <PetshoppeLogo width="24" height="24" color="#0d1b12" />
+          <FaGamepad size={24} color="#0d1b12" />
           <h2 className="text-[#0d1b12] text-lg font-bold leading-tight tracking-[-0.015em]">
-            Petshoppe
+            PixelRent
           </h2>
         </Link>
 

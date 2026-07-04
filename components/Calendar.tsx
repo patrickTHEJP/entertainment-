@@ -90,20 +90,20 @@ const MonthView: React.FC<MonthViewProps> = ({
     <div className="flex min-w-72 max-w-[336px] flex-1 flex-col gap-0.5">
       <div className="flex items-center p-1 justify-between">
         {showPrev ? (
-          <button onClick={onPrev} className="hover:bg-gray-200 rounded-full">
-            <div className="text-[#0d1b12] flex size-10 items-center justify-center">
+          <button onClick={onPrev} className="hover:bg-white/10 rounded-full">
+            <div className="text-white flex size-10 items-center justify-center">
               {"<"}
             </div>
           </button>
         ) : (
           <div className="size-10" />
         )}
-        <p className="text-[#0d1b12] text-base font-bold leading-tight flex-1 text-center">
+        <p className="text-white text-base font-bold leading-tight flex-1 text-center">
           {monthName} {year}
         </p>
         {showNext ? (
-          <button onClick={onNext} className="hover:bg-gray-200 rounded-full">
-            <div className="text-[#0d1b12] flex size-10 items-center justify-center">
+          <button onClick={onNext} className="hover:bg-white/10 rounded-full">
+            <div className="text-white flex size-10 items-center justify-center">
               {">"}
             </div>
           </button>
@@ -115,7 +115,7 @@ const MonthView: React.FC<MonthViewProps> = ({
         {weekDays.map((day) => (
           <p
             key={day}
-            className="text-[#0d1b12] text-[13px] font-bold leading-normal tracking-[0.015em] flex h-12 w-full items-center justify-center pb-0.5"
+            className="text-white text-[13px] font-bold leading-normal tracking-[0.015em] flex h-12 w-full items-center justify-center pb-0.5"
           >
             {day}
           </p>
@@ -129,11 +129,13 @@ const MonthView: React.FC<MonthViewProps> = ({
             <button
               key={day.toString()}
               onClick={() => onDateSelect(day)}
-              className="h-12 w-full text-[#0d1b12] text-sm font-medium leading-normal"
+              className="h-12 w-full text-white text-sm font-medium leading-normal"
             >
               <div
                 className={`flex size-full items-center justify-center rounded-full transition-colors ${
-                  isSelected ? "bg-[#13ec5b]" : "hover:bg-gray-200"
+                  isSelected
+                    ? "bg-[#13ec5b] text-[#0d1b12]"
+                    : "hover:bg-white/10"
                 }`}
               >
                 {day.getDate()}

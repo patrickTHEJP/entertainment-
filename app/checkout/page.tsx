@@ -122,7 +122,7 @@ export default function CheckoutPage() {
             isOpen: true,
             title: "Payment Successful!",
             message:
-              "Thank you for your order! 🐾 Your payment has been processed successfully.",
+              "Thank you for your order! Your payment has been processed successfully.",
             type: "success",
           });
           clearCart();
@@ -242,7 +242,7 @@ export default function CheckoutPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         {/* Checkout Form */}
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 text-gray-900">
           <h2 className="text-xl font-semibold mb-4 sm:mb-6">
             Delivery Information
           </h2>
@@ -472,7 +472,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 text-gray-900">
           <h2 className="text-xl font-semibold mb-4 sm:mb-6">Order Summary</h2>
 
           <div className="space-y-4 mb-6">
