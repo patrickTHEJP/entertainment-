@@ -1,87 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { prisma } from "@/lib/prisma";
+import { getJwtSecret } from "@/lib/env";
+
 export const runtime = "nodejs";
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey"; // 🔒 Set in .env file
+const JWT_SECRET = getJwtSecret();
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, role } = await req.json();
-
-    // Validate input
+    const { email, password } = await req.json();
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
       );
     }
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
       return NextResponse.json(
-        { error: "User already exists" },
-        { status: 400 }
+        { error: "Invalid email or password" },
+        { status: 401 }
       );
     }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Assign role (default = USER)
-    const userRole =
-      role && typeof role === "string" && role.toUpperCase() === "ADMIN"
-        ? "ADMIN"
-        : "USER";
-
-    // Create user in the database
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        role: userRole,
-      },
-    });
-
-    // Generate JWT
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
     const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
+      { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
-
-    // Create a secure response with cookie
-    const response = NextResponse.json({
-      message: "User registered successfully",
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
+    const res = NextResponse.json({
+      message: "Login successful",
+      user: { id: user.id, email: user.email, role: user.role },
     });
-
-    response.cookies.set({
+    res.cookies.set({
       name: "token",
       value: token,
-      httpOnly: true, // prevents access via JS
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
     });
-
-    return response;
-  } catch (error) {
-    console.error("REGISTER ERROR:", error);
+    return res;
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
